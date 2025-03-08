@@ -2,6 +2,6 @@ package main;
 
 import model.*;
 
-public class OrganizerUI {
+public class AlarMed {
     
 }
