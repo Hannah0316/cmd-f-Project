@@ -9,12 +9,33 @@ public class Pill {
     private int dosage;
     private int frequencyDay;
     private String noteString;
+    LocalDate startDate;
+    LocalDate endDate;
+    ArrayList<LocalTime> timeList;
 
-    public Pill(String name, int dosage, int freq, String note) {
+    public Pill(String name, int dosage, int freq, String note, LocalDate start, LocalDate end, ArrayList<LocalTime> times) {
         this.name = name;
         this.dosage = dosage;
         frequencyDay = freq;
         noteString = note;
+        startDate = start;
+        endDate = end;
+        timeList = times;
+    }
+
+    public LocalDate getNextIntakeDate(Pill pill){
+        int freq = pill.getFreq();
+        int dayStart = startDate.getDayOfYear();
+        int today = LocalDate.now().getDayOfYear();
+        int calc = today-dayStart;
+        int day;
+        if (calc % freq ==0) {
+            return LocalDate.now();
+        } else {
+            day = (calc % freq) + today;
+        }
+        return LocalDate.ofYearDay(2025, day);
+
     }
 
     public void addNote(String note) {

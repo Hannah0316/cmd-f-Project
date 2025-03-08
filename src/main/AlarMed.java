@@ -22,7 +22,16 @@ public class AlarMed {
 
         this.scanner = new Scanner(System.in);
         patient = new Patient("", LocalDate.now(), LocalDate.now());
+        this.isProgramRunning = true;
      }
+
+     public void handleMenu() {
+        this.displayMenu();
+        String input = this.scanner.nextLine();
+        this.processMenuCommands(input);
+     }
+
+     public 
 
     
 }

@@ -7,14 +7,10 @@ import java.util.Map;
 
 public class Patient {
     protected String patientName;
-    LocalDate startDate;
-    LocalDate endDate;
-    Map<Pill, ArrayList<LocalTime>> mapPill;
+    ArrayList<Pill> Pills;
 
     public Patient(String name, LocalDate startDate, LocalDate endDate){
         this.patientName = name;
-        this. startDate = startDate;
-        this.endDate = endDate;
         mapPill = new HashMap<>();
     }
 
@@ -37,40 +33,9 @@ public class Patient {
        return null;
     }
 
-    //return ArrayList<LocalTime> of pills given Pill
-    public ArrayList<LocalTime> getPillTime(Pill pill){
-        if (mapPill.containsKey(pill)){
-        return mapPill.get(pill);
-        }else{
-            return null;
-        }
-    }
 
-    public LocalDate getNextIntakeDate(Pill pill){
-        int freq = pill.getFreq();
-        int dayStart = startDate.getDayOfYear();
-        int today = LocalDate.now().getDayOfYear();
-        int calc = today-dayStart;
-        int day;
-        if (calc % freq ==0) {
-            return LocalDate.now();
-        } else {
-            day = (calc % freq) + today;
-        }
-        return LocalDate.ofYearDay(2025, day);
-
-    }
-
-
-
-    public String getPlanName(){
+    public String getPatientName(){
         return patientName;
-    }
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-    public LocalDate getEndDate() {
-        return endDate;
     }
     public Map<Pill, ArrayList<LocalTime>> getMapPill() {
         return mapPill;
