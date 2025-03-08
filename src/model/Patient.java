@@ -5,14 +5,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Plan {
-    protected String planName;
+public class Patient {
+    protected String patientName;
     LocalDate startDate;
     LocalDate endDate;
     Map<Pill, ArrayList<LocalTime>> mapPill;
 
-    public Plan(String name, LocalDate startDate, LocalDate endDate){
-        this.planName = name;
+    public Patient(String name, LocalDate startDate, LocalDate endDate){
+        this.patientName = name;
         this. startDate = startDate;
         this.endDate = endDate;
         mapPill = new HashMap<>();
@@ -64,7 +64,7 @@ public class Plan {
 
 
     public String getPlanName(){
-        return planName;
+        return patientName;
     }
     public LocalDate getStartDate() {
         return startDate;

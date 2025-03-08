@@ -1,6 +1,8 @@
 package model;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 
 public class Pill {
     private String name;
@@ -8,11 +10,11 @@ public class Pill {
     private int frequencyDay;
     private String noteString;
 
-    public Pill(String name, int dosage, int freq) {
+    public Pill(String name, int dosage, int freq, String note) {
         this.name = name;
         this.dosage = dosage;
         frequencyDay = freq;
-        noteString = "";
+        noteString = note;
     }
 
     public void addNote(String note) {
