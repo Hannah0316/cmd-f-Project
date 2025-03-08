@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Plan {
-    String planName;
+    protected String planName;
     LocalDate startDate;
     LocalDate endDate;
     Map<Pill, ArrayList<LocalTime>> mapPill;
@@ -28,10 +28,13 @@ public class Plan {
         }
     }
     //return Pill given pill name
-    public Pill getPillInfo(String pill) {
-       for (String key : mapPill.keySet()) {
-        System.out.println("Key = " + key);
+    public Pill getPillInfo(String pillName) {
+       for (Pill pill : mapPill.keySet()) {
+        if (pill.getName() == pillName) {
+            return pill;
+        }
        }
+       return null;
     }
 
     //return ArrayList<LocalTime> of pills given Pill
@@ -43,18 +46,33 @@ public class Plan {
         }
     }
 
+    public LocalDate getNextIntakeDate(Pill pill){
+        int freq = pill.getFreq();
+        int dayStart = startDate.getDayOfYear();
+        int today = LocalDate.now().getDayOfYear();
+        int calc = today-dayStart;
+        int day;
+        if (calc % freq ==0) {
+            return LocalDate.now();
+        } else {
+            day = (calc % freq) + today;
+        }
+        return LocalDate.ofYearDay(2025, day);
+
+    }
 
 
-    protected String getPlanName() {
+
+    public String getPlanName(){
         return planName;
     }
-    protected LocalDate getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
-    protected LocalDate getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
-    protected Map<Pill, ArrayList<LocalTime>> getMapPill() {
+    public Map<Pill, ArrayList<LocalTime>> getMapPill() {
         return mapPill;
     }
 }
