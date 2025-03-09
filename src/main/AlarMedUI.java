@@ -178,7 +178,7 @@ public class AlarMedUI extends JFrame implements ActionListener{
     int dosage  = Integer.valueOf(JOptionPane.showInputDialog("Please enter the medication dosage:"));
     int freq = Integer.valueOf(JOptionPane.showInputDialog("Please enter the medication frequency (1= once per day, 7=weekly):"));
     String start = JOptionPane.showInputDialog("Please enter the start date (yyyy-MM-dd):");
-    String end = JOptionPane.showInputDialog("Please enter the start date (yyyy-MM-dd):");
+    String end = JOptionPane.showInputDialog("Please enter the end date (yyyy-MM-dd):");
     String note = JOptionPane.showInputDialog("Please any notes:");
     LocalDate startDate = LocalDate.parse(start);
     LocalDate endDate = LocalDate.parse(end);
