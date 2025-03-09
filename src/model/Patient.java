@@ -51,4 +51,8 @@ public class Patient {
         return patientName;
     }
 
+    public ArrayList<Pill> getPills() {
+        return pills;
+    }
+
 }
