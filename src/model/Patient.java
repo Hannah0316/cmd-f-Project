@@ -10,7 +10,7 @@ public class Patient {
     protected String patientName;
     ArrayList<Pill> pills;
 
-    public Patient(String name, LocalDate startDate, LocalDate endDate) {
+    public Patient(String name) {
         this.patientName = name;
         pills = new ArrayList<>();
     }
