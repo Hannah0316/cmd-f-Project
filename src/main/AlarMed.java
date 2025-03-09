@@ -82,6 +82,17 @@ public class AlarMed {
         return timeList;
      }
 
+     public void viewAllPills(){
+        ArrayList<Pill> pillList = patient.getPillList();
+        for (Pill pill: pillList) {
+            System.out.println("medication name: "+pill.getName());
+            System.out.println("medication dosage: "+pill.getDosage());
+            System.out.println("medication frequency: "+pill.getFreq());
+            System.out.println("next intake date: "+pill.getNextIntakeDate().toString());
+        }
+        
+     }
+
      public void deletePill() {
         System.out.println("Please enter the medication to be removed:");
         String name = this.scanner.nextLine();
@@ -96,28 +107,29 @@ public class AlarMed {
 
      public void displayMenu() {
         System.out.println("Hello"+ patient.getPatientName()+"! Please select an option:\n");
+        System.out.println("r: Register Patient");
         System.out.println("v: View all Pills");
         System.out.println("b: Add new pill");
-        System.out.println("r: Remove pill");
+        System.out.println("d: Delete pill");
         System.out.println("q: Quite the program");
      }
 
      public void processMenuCommands(String input) {
         switch (input) {
-           case "new":
-              this.makeNewCategory();
+           case "r":
+              this.addNewPatient();
               return;
-           case "load":
-              this.loadCategories();
+           case "v":
+              this.viewAllPills();
               return;
-           case "quit":
+           case "b":
+              this.addNewPill();
+              return;
+           case "d":
+              this.deletePill();
+              return;
+            case "q":
               this.quit();
-              return;
-           case "save":
-              this.saveCategories();
-              return;
-           case "view":
-              this.viewCategories();
               return;
         }
   
