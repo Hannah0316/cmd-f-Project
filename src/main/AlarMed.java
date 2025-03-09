@@ -29,6 +29,9 @@ import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JSplitPane;
 import javax.swing.ListSelectionModel;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import model.*;
 
@@ -44,7 +47,8 @@ public class AlarMed extends JFrame implements ActionListener{
     private DefaultListModel<Category> model = new DefaultListModel<>();
     private JSplitPane splitPane = new JSplitPane();
     private JPanel panel = new JPanel();
-
+    private LocalDate currentDay;
+    private LocalTime currentTime;
 
     public AlarMed() {
         super("AlarMed");
@@ -57,10 +61,74 @@ public class AlarMed extends JFrame implements ActionListener{
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.getBtn();
 
+        // Run user interface on a separate thread
+        new Thread(this::runUserInterface).start();
 
+        // Run machine on a separate thread
+        new Thread(this::runMachine).start();
+    }
+
+    public void runMachine() {
+        while (!patient.getPills().isEmpty()) {
+            try {
+                System.out.println("running");
+                Thread.sleep(60000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            update();
+        }
+        System.out.println("No more pills to take!");
+    }
+
+    public void runUserInterface() {
         while (this.isProgramRunning) {
             this.handleMenu();
         }
+    }
+
+    /*
+     * EFFECTS: runMachine when the patient should eat a pill
+     */
+    public void update() {
+        currentDay = LocalDate.now();
+        ArrayList<Pill> pills = patient.getPills();
+        for (Pill p : pills) {
+            if (p.getNextIntakeDate() == currentDay) {
+                currentTime = LocalTime.now();
+                int currentHour = currentTime.getHour();
+                int currentMinute = currentTime.getMinute();
+                ArrayList<LocalTime> times = p.getTimes();
+                for (LocalTime time : times) {
+                    int hour = time.getHour();
+                    int minute = time.getMinute();
+                    if (currentHour == hour && currentMinute == minute) {
+                        releasePill();
+                        System.out.println("Dropped a " + p.getName());
+                    }
+                }
+                System.out.println("No pill times equal current time");
+            }
+            checkAndRemovePill(p, currentDay);
+        }
+        System.out.println("Nothing to eat today");
+    }
+
+    /*
+     * EFFECT: remove pill from patient if today is the endDate of the pill
+     */
+    public void checkAndRemovePill(Pill pill, LocalDate date) {
+        int endDay = pill.getEndDate().getDayOfYear();
+        int today = date.getDayOfYear();
+        if (endDay == today) {
+            patient.removePill(pill);
+            String pillName = pill.getName();
+            System.out.println("Finished " + pillName + "!");
+        }
+    }
+
+    public void releasePill() {
+        System.out.println("Running machine!");
     }
 
     private void getBtn() {
