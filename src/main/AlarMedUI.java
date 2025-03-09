@@ -35,17 +35,32 @@ import java.util.concurrent.TimeUnit;
 
 import model.*;
 
-public class AlarMed {
+public class AlarMedUI extends JFrame implements ActionListener{
 
     private Patient patient;
     private Scanner scanner;
     private boolean isProgramRunning;
     private Pill pill;
+    private int index;
+    private JComboBox<String> printCombo;
+    private JList<Category> list = new JList();
+    private DefaultListModel<Category> model = new DefaultListModel<>();
+    private JSplitPane splitPane = new JSplitPane();
+    private JPanel panel = new JPanel();
     private LocalDate currentDay;
     private LocalTime currentTime;
 
     public AlarMed() {
-        initiate();
+        super("AlarMed");
+        this.initiate();
+        list.setModel(model);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setPreferredSize(new Dimension(800, 800));
+        ((JPanel) getContentPane()).setBorder(new EmptyBorder(13, 13, 13, 13));
+        setLayout(new FlowLayout());
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        this.getBtn();
+
         // Run user interface on a separate thread
         new Thread(this::runUserInterface).start();
 
@@ -115,11 +130,44 @@ public class AlarMed {
     public void releasePill() {
         System.out.println("Running machine!");
     }
+
+    private void getBtn() {
+      JButton newBtn = new JButton("New User");
+      newBtn.setActionCommand("new");
+      newBtn.addActionListener(this);
+      JButton viewBtn = new JButton("View Pills");
+      viewBtn.setActionCommand("view");
+      viewBtn.addActionListener(this);
+      JButton addBtn = new JButton("Add Pill");
+      addBtn.setActionCommand("add");
+      addBtn.addActionListener(this);
+      JButton removeBtn = new JButton("Remove Pill");
+      removeBtn.setActionCommand("remove");
+      removeBtn.addActionListener(this);
+      JButton carrotBtn = new JButton("Carrot Punching Earth");
+      carrotBtn.setActionCommand("carrot");
+      carrotBtn.addActionListener(this);
+      this.addBtn(newBtn, viewBtn, addBtn, removeBtn, carrotBtn);
+   }
+
+   private void addBtn(JButton newBtn, JButton viewBtn, JButton addBtn, JButton removeBtn, JButton carrotBtn) {
+    this.add(newBtn);
+    this.add(viewBtn);
+    this.add(addBtn);
+    this.add(removeBtn);
+    this.add(carrotBtn);
+    this.pack();
+    this.setLocationRelativeTo((Component)null);
+    this.setVisible(true);
+    this.setResizable(false);
+ }
+
     public void initiate() {
 
         this.scanner = new Scanner(System.in);
         patient = new Patient("");
         this.isProgramRunning = true;
+        this.index = 0;
     }
 
     public void quit() {
@@ -141,6 +189,17 @@ public class AlarMed {
 
     }
 
+    public void newPatientUI() {
+      String name = JOptionPane.showInputDialog("Please enter the patient name:");
+      patient = new Patient(name);
+      JOptionPane.showMessageDialog((Component)null, "Welcome! "+ name);
+      this.pack();
+      this.setLocationRelativeTo((Component)null);
+      this.setVisible(true);
+      this.setResizable(false);
+
+    }
+
     public void addNewPill() {
         System.out.println("Please enter the medication name:");
         String name = this.scanner.nextLine();
@@ -158,6 +217,25 @@ public class AlarMed {
         ArrayList<LocalTime> timeList = getListTime(time);
         patient.addPill(name, dosage, freq, startDate, endDate, timeList);
     }
+
+
+   public void addPillUI() {
+    String name = JOptionPane.showInputDialog("Please enter the medication name:");
+    int dosage  = Integer.valueOf(JOptionPane.showInputDialog("Please enter the medication dosage:"));
+    int freq = Integer.valueOf(JOptionPane.showInputDialog("Please enter the medication frequency (1= once per day, 7=weekly):"));
+    String start = JOptionPane.showInputDialog("Please enter the start date (yyyy-MM-dd):");
+    String end = JOptionPane.showInputDialog("Please enter the start date (yyyy-MM-dd):");
+    LocalDate startDate = LocalDate.parse(start);
+    LocalDate endDate = LocalDate.parse(end);
+    ArrayList<LocalTime> time = new ArrayList<>();
+    time = getListTimeUI(time);
+    patient.addPill(name, dosage, freq, startDate, endDate, time);
+    JOptionPane.showMessageDialog((Component)null, "medication: " + name + " has ben added");
+    this.pack();
+    this.setLocationRelativeTo((Component)null);
+    this.setVisible(true);
+    this.setResizable(false);
+ }
 
 
     private ArrayList<LocalTime> getListTime(ArrayList<LocalTime> time) {
@@ -181,6 +259,26 @@ public class AlarMed {
         return time;
     }
 
+
+    private ArrayList<LocalTime> getListTimeUI(ArrayList<LocalTime> time) {
+        Boolean flag = false;
+        while (!flag) {
+            String input = JOptionPane.showInputDialog("Please enter the time to take medication, in military time (e.g 14:25)");
+            LocalTime t = LocalTime.parse(input);
+            if (!time.contains(t)) {
+                time.add(t);
+                JOptionPane.showMessageDialog((Component)null, "added time");
+            } else {
+                JOptionPane.showMessageDialog((Component)null,"duplicate time entered");
+            }
+            input = JOptionPane.showInputDialog("Add another time? y/n");
+            if (input.equalsIgnoreCase("n")) {
+                flag = true;
+            }
+        }
+        return time;
+    }
+
     public void viewAllPills() {
         ArrayList<Pill> pillList = patient.getPills();
         for (Pill pill : pillList) {
@@ -189,7 +287,42 @@ public class AlarMed {
 
     }
 
+    public void viewAllPillsUI() {
+     ArrayList<String> pillList = new ArrayList<>();
+        for (Pill p : this.patient.getPills()) {
+            String name = p.getName();
+            pillList.add(name);
+        }
+        JList<String> list = getList(pillList);
+
+        getListScroller(list);
+        JButton deletePillBtn = getDeletePillBtn(list);
+        JButton moreInfoBtn = getMoreInfoBtn(list);
+
+        add(deletePillBtn);
+        add(moreInfoBtn);
+
+        setLocationRelativeTo(null);
+        setVisible(true);
+
+    }
+
+    private JList<String> getList(ArrayList<String> pillList) {
+        System.out.println(pillList);
+        JList<String> list = new JList(pillList.toArray());
+        list.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        list.setLayoutOrientation(JList.VERTICAL_WRAP);
+        list.setVisibleRowCount(-1);
+        return list;
+    }
   
+    private void getListScroller(JList<String> list) {
+        JScrollPane listScroller = new JScrollPane(list);
+        listScroller.setPreferredSize(new Dimension(250, 80));
+        listScroller.setAlignmentX(LEFT_ALIGNMENT);
+        add(listScroller);
+    }
+
     public void deletePill() {
         System.out.println("Please enter the medication to be removed:");
         String name = this.scanner.nextLine();
@@ -200,7 +333,33 @@ public class AlarMed {
         }
         System.out.println("Pill Removed");
     }
+
+    private JButton getDeletePillBtn(JList<String> list) {
+        JButton deletePillBtn = new JButton("Delete Pill");
+        deletePillBtn.setActionCommand("deletePill");
+        deletePillBtn.addActionListener(this);
+        deletePillBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                index = list.getSelectedIndex();
+
+                pill = patient.getPillIndex(index);
+                deletePillUI();
+            }
+        });
+        return deletePillBtn;
+     }
   
+     private JButton getMoreInfoBtn(JList<String> list) {
+        JButton moreInfoBtn = new JButton("More Info");
+        moreInfoBtn.setActionCommand("moreInfo");
+        moreInfoBtn.addActionListener(this);
+        return moreInfoBtn;
+     }
+
+    public void deletePillUI() {
+        this.patient.removePill(this.pill);
+     }
 
     public void inspectPill() {
         System.out.println("Please enter the medication to be inspected:");
@@ -214,6 +373,25 @@ public class AlarMed {
 
     }
 
+    public void moreInfoUI() {
+      JLabel nameField = new JLabel("name:" +this.pill.getName());
+      JLabel dosageField = new JLabel("dosage:"+String.valueOf(this.pill.getDosage()));
+      JLabel freqField = new JLabel("frequency:"+String.valueOf(this.pill.getFreq()));
+      JLabel nextIntakeField = new JLabel("next intake date:"+String.valueOf(this.pill.getNextIntakeDate().toString()));
+      JLabel startField = new JLabel("start date:"+String.valueOf(this.pill.getStartDate().toString()));
+      JLabel endField = new JLabel("end date:"+String.valueOf(this.pill.getEndDate().toString()));
+      this.add(nameField);
+      this.add(dosageField);
+      this.add(freqField);
+      this.add(nextIntakeField);
+      this.add(startField);
+      this.add(endField);
+      this.pack();
+      this.setLocationRelativeTo((Component)null);
+      this.setVisible(true);
+      this.setResizable(false);
+
+    }
 
     public void pillInfo(Pill pill) {
         System.out.println("name: " + pill.getName());
@@ -264,5 +442,28 @@ public class AlarMed {
 
         System.out.println("Invalid. Please try again.");
     }
+
+    public void actionPerformed(ActionEvent e) {
+  
+        if (e.getActionCommand().equals("new")) {
+           this.newPatientUI();
+        }
+  
+        if (e.getActionCommand().equals("add")) {
+           this.addPillUI();
+        }
+  
+        if (e.getActionCommand().equals("view")) {
+           this.viewAllPillsUI();
+        }
+
+        if (e.getActionCommand().equals("deletePill")) {
+            this.deletePillUI();
+         }
+
+         if (e.getActionCommand().equals("moreInfo")) {
+            this.moreInfoUI();
+         }
+     }
 
 }
