@@ -58,12 +58,13 @@ public class AlarMed {
     public void runMachine() {
         while (!patient.getPills().isEmpty()) {
             try {
-                System.out.println("running");
+                System.out.println("Waiting for a minute...");
                 Thread.sleep(60000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             update();
+            System.out.println();
         }
         System.out.println("No more pills to take!");
     }
@@ -78,10 +79,11 @@ public class AlarMed {
      * EFFECTS: runMachine when the patient should eat a pill
      */
     public void update() {
+        System.out.println("Checking time...");
         currentDay = LocalDate.now();
         ArrayList<Pill> pills = patient.getPills();
         for (Pill p : pills) {
-            if (p.getNextIntakeDate() == currentDay) {
+            if (p.getNextIntakeDate().equals(currentDay)) {
                 currentTime = LocalTime.now();
                 int currentHour = currentTime.getHour();
                 int currentMinute = currentTime.getMinute();
@@ -90,15 +92,23 @@ public class AlarMed {
                     int hour = time.getHour();
                     int minute = time.getMinute();
                     if (currentHour == hour && currentMinute == minute) {
-                        releasePill();
-                        System.out.println("Dropped a " + p.getName());
+                        int count = 0;
+                        while (count != p.getDosage()) {
+                            releasePill();
+                            try {
+                                Thread.sleep(2000);
+                            } catch (InterruptedException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
+                            System.out.println("Dropped a " + p.getName() + " at " + currentHour + ":" + currentMinute);
+                            count++;
+                        }
                     }
                 }
-                System.out.println("No pill times equal current time");
             }
             checkAndRemovePill(p, currentDay);
         }
-        System.out.println("Nothing to eat today");
     }
 
     /*
@@ -117,6 +127,7 @@ public class AlarMed {
     public void releasePill() {
         System.out.println("Running machine!");
     }
+
     public void initiate() {
 
         this.scanner = new Scanner(System.in);
@@ -161,7 +172,6 @@ public class AlarMed {
         patient.addPill(name, dosage, freq, startDate, endDate, timeList);
     }
 
-
     private ArrayList<LocalTime> getListTime(ArrayList<LocalTime> time) {
         Boolean flag = false;
         while (!flag) {
@@ -191,7 +201,6 @@ public class AlarMed {
 
     }
 
-  
     public void deletePill() {
         System.out.println("Please enter the medication to be removed:");
         String name = this.scanner.nextLine();
@@ -202,7 +211,6 @@ public class AlarMed {
         }
         System.out.println("Pill Removed");
     }
-  
 
     public void inspectPill() {
         System.out.println("Please enter the medication to be inspected:");
@@ -215,7 +223,6 @@ public class AlarMed {
         }
 
     }
-
 
     public void pillInfo(Pill pill) {
         System.out.println("name: " + pill.getName());
