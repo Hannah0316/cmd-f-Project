@@ -13,7 +13,7 @@ public class Pill {
     LocalDate endDate;
     ArrayList<LocalTime> timeList;
 
-    public Pill(String name, int dosage, int freq, LocalDate start, LocalDate end, ArrayList<LocalTime> times) {
+    public Pill(String name, int dosage, int freq, LocalDate start, LocalDate end, ArrayList<LocalTime> times, String note) {
         this.name = name;
         this.dosage = dosage;
         frequencyDay = freq;
@@ -21,6 +21,7 @@ public class Pill {
         startDate = start;
         endDate = end;
         timeList = times;
+        noteString = note;
     }
 
     public LocalDate getNextIntakeDate(){

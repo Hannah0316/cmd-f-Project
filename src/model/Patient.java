@@ -15,8 +15,8 @@ public class Patient {
         pills = new ArrayList<>();
     }
 
-    public void addPill(String name, int dosage, int freq, LocalDate start, LocalDate end, ArrayList<LocalTime> times) {
-        Pill pill = new Pill(name, dosage, freq, start, end, times);
+    public void addPill(String name, int dosage, int freq, LocalDate start, LocalDate end, ArrayList<LocalTime> times, String note) {
+        Pill pill = new Pill(name, dosage, freq, start, end, times, note);
         pills.add(pill);
     }
 

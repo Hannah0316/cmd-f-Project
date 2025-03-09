@@ -165,11 +165,13 @@ public class AlarMed {
         String start = this.scanner.nextLine();
         System.out.println("Please enter the end date (yyyy-MM-dd):");
         String end = this.scanner.nextLine();
+        System.out.println("Please enter any notes:");
+        String note = this.scanner.nextLine();
         LocalDate startDate = LocalDate.parse(start);
         LocalDate endDate = LocalDate.parse(end);
         ArrayList<LocalTime> time = new ArrayList<>();
         ArrayList<LocalTime> timeList = getListTime(time);
-        patient.addPill(name, dosage, freq, startDate, endDate, timeList);
+        patient.addPill(name, dosage, freq, startDate, endDate, timeList, note);
     }
 
     private ArrayList<LocalTime> getListTime(ArrayList<LocalTime> time) {
