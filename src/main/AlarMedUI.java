@@ -226,12 +226,12 @@ public class AlarMedUI extends JFrame implements ActionListener{
 
     }
 
-    private JButton getCloseBtn(JScrollPane scroller, JButton btn1, JButton btn2) {
+    private JButton getCloseBtn(JScrollPane scroller, JButton btn1, JButton btn2, AlarMedUI ui) {
         JButton closeBtn = new JButton("Close Scroller");
         closeBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                scroller.setVisible(false);
+                ui.remove(scroller);
                 btn1.setVisible(false);
                 btn2.setVisible((false));
                 closeBtn.setVisible(false);
@@ -259,7 +259,7 @@ public class AlarMedUI extends JFrame implements ActionListener{
 
         JButton deletePillBtn = getDeletePillBtn(list);
         JButton moreInfoBtn = getMoreInfoBtn(list);
-        JButton closeBtn = getCloseBtn(listScroller, deletePillBtn, moreInfoBtn);
+        JButton closeBtn = getCloseBtn(listScroller, deletePillBtn, moreInfoBtn, this);
 
         add(deletePillBtn);
         add(moreInfoBtn);
@@ -312,6 +312,7 @@ public class AlarMedUI extends JFrame implements ActionListener{
       JLabel endField = new JLabel("end date: "+String.valueOf(this.pill.getEndDate().toString()));
       JLabel noteField = new JLabel("note: "+this.pill.getNote());
       JLabel timeField = new JLabel("time: "+this.pill.getTimes());
+      JButton closeInfoBtn = getInfoCloseBtn(nameField, dosageField, freqField, nextIntakeField, startField, endField, noteField, timeField);
       this.add(nameField);
       this.add(dosageField);
       this.add(freqField);
@@ -320,6 +321,7 @@ public class AlarMedUI extends JFrame implements ActionListener{
       this.add(endField);
       this.add(noteField);
       this.add(timeField);
+      this.add(closeInfoBtn);
       this.pack();
       this.setLocationRelativeTo((Component)null);
       this.setVisible(true);
@@ -327,6 +329,28 @@ public class AlarMedUI extends JFrame implements ActionListener{
 
     }
     
+
+    private JButton getInfoCloseBtn(JLabel f1, JLabel f2, JLabel f3, JLabel f4, JLabel f5, JLabel f6, JLabel f7, JLabel f8) {
+        JButton closeInfoBtn = new JButton("Close Info");
+        closeInfoBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                f1.setVisible(false);
+                f2.setVisible(false);
+                f3.setVisible(false);
+                f4.setVisible(false);
+                f5.setVisible(false);
+                f6.setVisible(false);
+                f7.setVisible(false);
+                f8.setVisible(false);
+                closeInfoBtn.setVisible(false);
+                revalidate(); // Refresh the layout
+                repaint(); // Redraw the UI
+            }
+        });
+        return closeInfoBtn;
+    }
+
 
     public void actionPerformed(ActionEvent e) {
   
