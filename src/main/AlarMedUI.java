@@ -55,6 +55,8 @@ public class AlarMedUI extends JFrame implements ActionListener {
     private JPanel panel = new JPanel();
     private LocalDate currentDay;
     private LocalTime currentTime;
+    private int currentHour;
+    private int currentMinute;
     String alert = "beep-125033.wav";
 
     public AlarMedUI() {
@@ -75,12 +77,13 @@ public class AlarMedUI extends JFrame implements ActionListener {
     public void runMachine() {
         while (isProgramRunning) {
             try {
-                System.out.println("running");
+                System.out.println("Waiting for a minute...");
                 Thread.sleep(60000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             update();
+            System.out.println();
         }
     }
 
@@ -90,12 +93,13 @@ public class AlarMedUI extends JFrame implements ActionListener {
     public void update() {
         System.out.println("Checking time...");
         currentDay = LocalDate.now();
+        currentTime = LocalTime.now();
+        currentHour = currentTime.getHour();
+        currentMinute = currentTime.getMinute();
         ArrayList<Pill> pills = patient.getPills();
+        boolean droppedPill = false;
         for (Pill p : pills) {
             if (p.getNextIntakeDate().equals(currentDay)) {
-                currentTime = LocalTime.now();
-                int currentHour = currentTime.getHour();
-                int currentMinute = currentTime.getMinute();
                 ArrayList<LocalTime> times = p.getTimes();
                 for (LocalTime time : times) {
                     int hour = time.getHour();
@@ -103,20 +107,24 @@ public class AlarMedUI extends JFrame implements ActionListener {
                     if (currentHour == hour && currentMinute == minute) {
                         int count = 0;
                         while (count != p.getDosage()) {
-                            releasePill();
+                            releasePill(p);
+                            count++;
+                            droppedPill = true;
                             try {
                                 Thread.sleep(2000);
                             } catch (InterruptedException e) {
                                 // TODO Auto-generated catch block
                                 e.printStackTrace();
                             }
-                            System.out.println("Dropped a " + p.getName() + " at " + currentHour + ":" + currentMinute);
-                            count++;
                         }
                     }
                 }
             }
             checkAndRemovePill(p, currentDay);
+        }
+
+        if (!droppedPill) {
+            System.out.println("No pill has dropped at " + currentHour + ":" + currentMinute);
         }
     }
 
@@ -133,11 +141,11 @@ public class AlarMedUI extends JFrame implements ActionListener {
         }
     }
 
-    public void releasePill() {
-        System.out.println("output");
+    public void releasePill(Pill p) {
         // output sound
         AudioInputStream audioInputStream;
-        System.out.println("audio");
+        System.out.println("Alert at " + currentHour + ":" + currentMinute);
+        System.out.println("    >>> Please press the blue button to drop a " + p.getName());
         try {
             audioInputStream = AudioSystem.getAudioInputStream(new File(alert).getAbsoluteFile());
             Clip clip = AudioSystem.getClip();
