@@ -221,15 +221,25 @@ public class AlarMedUI extends JFrame implements ActionListener{
         JList<String> list = getList(pillList);
 
         getListScroller(list);
-        JButton deletePillBtn = getDeletePillBtn(list);
-        JButton moreInfoBtn = getMoreInfoBtn(list);
-
-        add(deletePillBtn);
-        add(moreInfoBtn);
-
         setLocationRelativeTo(null);
         setVisible(true);
 
+    }
+
+    private JButton getCloseBtn(JScrollPane scroller, JButton btn1, JButton btn2) {
+        JButton closeBtn = new JButton("Close Scroller");
+        closeBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                scroller.setVisible(false);
+                btn1.setVisible(false);
+                btn2.setVisible((false));
+                closeBtn.setVisible(false);
+                revalidate(); // Refresh the layout
+                repaint(); // Redraw the UI
+            }
+        });
+        return closeBtn;
     }
 
     private JList<String> getList(ArrayList<String> pillList) {
@@ -246,6 +256,15 @@ public class AlarMedUI extends JFrame implements ActionListener{
         listScroller.setPreferredSize(new Dimension(250, 80));
         listScroller.setAlignmentX(LEFT_ALIGNMENT);
         listScroller.setVisible(true);
+
+        JButton deletePillBtn = getDeletePillBtn(list);
+        JButton moreInfoBtn = getMoreInfoBtn(list);
+        JButton closeBtn = getCloseBtn(listScroller, deletePillBtn, moreInfoBtn);
+
+        add(deletePillBtn);
+        add(moreInfoBtn);
+        add(closeBtn);
+
         add(listScroller);
     }
     private JButton getDeletePillBtn(JList<String> list) {
