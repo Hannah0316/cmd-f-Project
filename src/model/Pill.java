@@ -13,11 +13,11 @@ public class Pill {
     LocalDate endDate;
     ArrayList<LocalTime> timeList;
 
-    public Pill(String name, int dosage, int freq, String note, LocalDate start, LocalDate end, ArrayList<LocalTime> times) {
+    public Pill(String name, int dosage, int freq, LocalDate start, LocalDate end, ArrayList<LocalTime> times) {
         this.name = name;
         this.dosage = dosage;
         frequencyDay = freq;
-        noteString = note;
+        noteString = "";
         startDate = start;
         endDate = end;
         timeList = times;
@@ -35,8 +35,9 @@ public class Pill {
             day = (calc % freq) + today;
         }
         return LocalDate.ofYearDay(2025, day);
-
     }
+
+    // public LocalTime 
 
     public void addNote(String note) {
         noteString = note;
