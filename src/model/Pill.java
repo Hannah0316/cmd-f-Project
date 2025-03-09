@@ -70,5 +70,4 @@ public class Pill {
     public ArrayList<LocalTime> getTimes() {
         return timeList;
     }
-
 }

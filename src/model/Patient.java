@@ -28,6 +28,14 @@ public class Patient {
         }
     }
 
+    public void removePill(Pill pill) {
+        for (Pill p : pills) {
+            if (p.equals(pill)) {
+                pills.remove(p);
+            }
+        }
+    }
+
     // return Pill given pill name
     public Pill getPill(String pillName) {
         for (Pill pill : pills) {
@@ -45,6 +53,11 @@ public class Patient {
             }
         }
         return null;
+    }
+
+
+    public Pill getPillIndex(int i) {
+        return pills.get(i);
     }
 
     public String getPatientName() {
