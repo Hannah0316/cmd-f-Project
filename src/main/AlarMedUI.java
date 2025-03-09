@@ -32,10 +32,16 @@ import javax.swing.ListSelectionModel;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.awt.Toolkit;
+import java.io.File;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 import model.*;
 
-public class AlarMedUI extends JFrame implements ActionListener{
+public class AlarMedUI extends JFrame implements ActionListener {
 
     private Patient patient;
     private Scanner scanner;
@@ -49,6 +55,7 @@ public class AlarMedUI extends JFrame implements ActionListener{
     private JPanel panel = new JPanel();
     private LocalDate currentDay;
     private LocalTime currentTime;
+    String alert = "beep-125033.wav";
 
     public AlarMedUI() {
         super("AlarMed");
@@ -66,6 +73,7 @@ public class AlarMedUI extends JFrame implements ActionListener{
     }
 
     public void runMachine() {
+        while (isProgramRunning) {
             try {
                 System.out.println("running");
                 Thread.sleep(60000);
@@ -73,6 +81,7 @@ public class AlarMedUI extends JFrame implements ActionListener{
                 e.printStackTrace();
             }
             update();
+        }
     }
 
     /*
@@ -110,6 +119,7 @@ public class AlarMedUI extends JFrame implements ActionListener{
             checkAndRemovePill(p, currentDay);
         }
     }
+
     /*
      * EFFECT: remove pill from patient if today is the endDate of the pill
      */
@@ -125,31 +135,51 @@ public class AlarMedUI extends JFrame implements ActionListener{
 
     public void releasePill() {
         System.out.println("output");
-        JOptionPane.showMessageDialog((Component)null, "Eat your pills! "+patient.getPatientName());
+        // output sound
+        AudioInputStream audioInputStream;
+        System.out.println("audio");
+        try {
+            audioInputStream = AudioSystem.getAudioInputStream(new File(alert).getAbsoluteFile());
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioInputStream);
+            clip.start();
+        } catch (UnsupportedAudioFileException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+            ;
+        }
+
+        JOptionPane.showMessageDialog((Component) null, "Eat your pills! " + patient.getPatientName());
+
     }
 
     private void getBtn() {
-      JButton newBtn = new JButton("New User");
-      newBtn.setActionCommand("new");
-      newBtn.addActionListener(this);
-      JButton viewBtn = new JButton("View Pills");
-      viewBtn.setActionCommand("view");
-      viewBtn.addActionListener(this);
-      JButton addBtn = new JButton("Add Pill");
-      addBtn.setActionCommand("add");
-      addBtn.addActionListener(this);
-      this.addBtn(newBtn, viewBtn, addBtn);
-   }
+        JButton newBtn = new JButton("New User");
+        newBtn.setActionCommand("new");
+        newBtn.addActionListener(this);
+        JButton viewBtn = new JButton("View Pills");
+        viewBtn.setActionCommand("view");
+        viewBtn.addActionListener(this);
+        JButton addBtn = new JButton("Add Pill");
+        addBtn.setActionCommand("add");
+        addBtn.addActionListener(this);
+        this.addBtn(newBtn, viewBtn, addBtn);
+    }
 
-   private void addBtn(JButton newBtn, JButton viewBtn, JButton addBtn) {
-    this.add(newBtn);
-    this.add(viewBtn);
-    this.add(addBtn);
-    this.pack();
-    this.setLocationRelativeTo((Component)null);
-    this.setVisible(true);
-    this.setResizable(false);
- }
+    private void addBtn(JButton newBtn, JButton viewBtn, JButton addBtn) {
+        this.add(newBtn);
+        this.add(viewBtn);
+        this.add(addBtn);
+        this.pack();
+        this.setLocationRelativeTo((Component) null);
+        this.setVisible(true);
+        this.setResizable(false);
+    }
 
     public void initiate() {
 
@@ -161,47 +191,48 @@ public class AlarMedUI extends JFrame implements ActionListener{
         addPillUI();
     }
 
-
     public void newPatientUI() {
-      String name = JOptionPane.showInputDialog("Please enter the patient name:");
-      patient = new Patient(name);
-      JOptionPane.showMessageDialog((Component)null, "Welcome! "+ name);
-      this.pack();
-      this.setLocationRelativeTo((Component)null);
-      this.setVisible(true);
-      this.setResizable(false);
+        String name = JOptionPane.showInputDialog("Please enter the patient name:");
+        patient = new Patient(name);
+        JOptionPane.showMessageDialog((Component) null, "Welcome! " + name);
+        this.pack();
+        this.setLocationRelativeTo((Component) null);
+        this.setVisible(true);
+        this.setResizable(false);
 
     }
 
-   public void addPillUI() {
-    String name = JOptionPane.showInputDialog("Please enter the medication name:");
-    int dosage  = Integer.valueOf(JOptionPane.showInputDialog("Please enter the medication dosage:"));
-    int freq = Integer.valueOf(JOptionPane.showInputDialog("Please enter the medication frequency (1= once per day, 7=weekly):"));
-    String start = JOptionPane.showInputDialog("Please enter the start date (yyyy-MM-dd):");
-    String end = JOptionPane.showInputDialog("Please enter the end date (yyyy-MM-dd):");
-    String note = JOptionPane.showInputDialog("Please any notes:");
-    LocalDate startDate = LocalDate.parse(start);
-    LocalDate endDate = LocalDate.parse(end);
-    ArrayList<LocalTime> time = new ArrayList<>();
-    time = getListTimeUI(time);
-    patient.addPill(name, dosage, freq, startDate, endDate, time, note);
-    JOptionPane.showMessageDialog((Component)null, "medication: " + name + " has ben added");
-    this.pack();
-    this.setLocationRelativeTo((Component)null);
-    this.setVisible(true);
-    this.setResizable(false);
- }
+    public void addPillUI() {
+        String name = JOptionPane.showInputDialog("Please enter the medication name:");
+        int dosage = Integer.valueOf(JOptionPane.showInputDialog("Please enter the medication dosage:"));
+        int freq = Integer.valueOf(
+                JOptionPane.showInputDialog("Please enter the medication frequency (1= once per day, 7=weekly):"));
+        String start = JOptionPane.showInputDialog("Please enter the start date (yyyy-MM-dd):");
+        String end = JOptionPane.showInputDialog("Please enter the end date (yyyy-MM-dd):");
+        String note = JOptionPane.showInputDialog("Please any notes:");
+        LocalDate startDate = LocalDate.parse(start);
+        LocalDate endDate = LocalDate.parse(end);
+        ArrayList<LocalTime> time = new ArrayList<>();
+        time = getListTimeUI(time);
+        patient.addPill(name, dosage, freq, startDate, endDate, time, note);
+        JOptionPane.showMessageDialog((Component) null, "medication: " + name + " has ben added");
+        this.pack();
+        this.setLocationRelativeTo((Component) null);
+        this.setVisible(true);
+        this.setResizable(false);
+    }
 
     private ArrayList<LocalTime> getListTimeUI(ArrayList<LocalTime> time) {
         Boolean flag = false;
         while (!flag) {
-            String input = JOptionPane.showInputDialog("Please enter the time to take medication, in military time (e.g 14:25)");
+            String input = JOptionPane
+                    .showInputDialog("Please enter the time to take medication, in military time (e.g 14:25)");
             LocalTime t = LocalTime.parse(input);
             if (!time.contains(t)) {
                 time.add(t);
-                JOptionPane.showMessageDialog((Component)null, "added time");
+                JOptionPane.showMessageDialog((Component) null, "added time");
             } else {
-                JOptionPane.showMessageDialog((Component)null,"duplicate time entered");
+                JOptionPane.showMessageDialog((Component) null, "duplicate time entered");
             }
             input = JOptionPane.showInputDialog("Add another time? y/n");
             if (input.equalsIgnoreCase("n")) {
@@ -212,8 +243,8 @@ public class AlarMedUI extends JFrame implements ActionListener{
     }
 
     public void viewAllPillsUI() {
-        
-     ArrayList<String> pillList = new ArrayList<>();
+
+        ArrayList<String> pillList = new ArrayList<>();
         for (Pill p : this.patient.getPills()) {
             String name = p.getName();
             pillList.add(name);
@@ -250,7 +281,7 @@ public class AlarMedUI extends JFrame implements ActionListener{
         list.setVisibleRowCount(-1);
         return list;
     }
-  
+
     private void getListScroller(JList<String> list) {
         JScrollPane listScroller = new JScrollPane(list);
         listScroller.setPreferredSize(new Dimension(250, 80));
@@ -267,6 +298,7 @@ public class AlarMedUI extends JFrame implements ActionListener{
 
         add(listScroller);
     }
+
     private JButton getDeletePillBtn(JList<String> list) {
         JButton deletePillBtn = new JButton("Delete Pill");
         deletePillBtn.setActionCommand("deletePill");
@@ -281,9 +313,9 @@ public class AlarMedUI extends JFrame implements ActionListener{
             }
         });
         return deletePillBtn;
-     }
-  
-     private JButton getMoreInfoBtn(JList<String> list) {
+    }
+
+    private JButton getMoreInfoBtn(JList<String> list) {
         JButton moreInfoBtn = new JButton("More Info");
         moreInfoBtn.setActionCommand("moreInfo");
         moreInfoBtn.addActionListener(this);
@@ -298,39 +330,41 @@ public class AlarMedUI extends JFrame implements ActionListener{
         });
         return moreInfoBtn;
     }
+
     public void deletePillUI() {
         this.patient.removePill(this.pill);
-     }
-    
+    }
 
     public void moreInfoUI() {
-      JLabel nameField = new JLabel("name: " +this.pill.getName());
-      JLabel dosageField = new JLabel("dosage: "+String.valueOf(this.pill.getDosage()));
-      JLabel freqField = new JLabel("frequency: "+String.valueOf(this.pill.getFreq()));
-      JLabel nextIntakeField = new JLabel("next intake date: "+String.valueOf(this.pill.getNextIntakeDate().toString()));
-      JLabel startField = new JLabel("start date: "+String.valueOf(this.pill.getStartDate().toString()));
-      JLabel endField = new JLabel("end date: "+String.valueOf(this.pill.getEndDate().toString()));
-      JLabel noteField = new JLabel("note: "+this.pill.getNote());
-      JLabel timeField = new JLabel("time: "+this.pill.getTimes());
-      JButton closeInfoBtn = getInfoCloseBtn(nameField, dosageField, freqField, nextIntakeField, startField, endField, noteField, timeField);
-      this.add(nameField);
-      this.add(dosageField);
-      this.add(freqField);
-      this.add(nextIntakeField);
-      this.add(startField);
-      this.add(endField);
-      this.add(noteField);
-      this.add(timeField);
-      this.add(closeInfoBtn);
-      this.pack();
-      this.setLocationRelativeTo((Component)null);
-      this.setVisible(true);
-      this.setResizable(false);
+        JLabel nameField = new JLabel("name: " + this.pill.getName());
+        JLabel dosageField = new JLabel("dosage: " + String.valueOf(this.pill.getDosage()));
+        JLabel freqField = new JLabel("frequency: " + String.valueOf(this.pill.getFreq()));
+        JLabel nextIntakeField = new JLabel(
+                "next intake date: " + String.valueOf(this.pill.getNextIntakeDate().toString()));
+        JLabel startField = new JLabel("start date: " + String.valueOf(this.pill.getStartDate().toString()));
+        JLabel endField = new JLabel("end date: " + String.valueOf(this.pill.getEndDate().toString()));
+        JLabel noteField = new JLabel("note: " + this.pill.getNote());
+        JLabel timeField = new JLabel("time: " + this.pill.getTimes());
+        JButton closeInfoBtn = getInfoCloseBtn(nameField, dosageField, freqField, nextIntakeField, startField, endField,
+                noteField, timeField);
+        this.add(nameField);
+        this.add(dosageField);
+        this.add(freqField);
+        this.add(nextIntakeField);
+        this.add(startField);
+        this.add(endField);
+        this.add(noteField);
+        this.add(timeField);
+        this.add(closeInfoBtn);
+        this.pack();
+        this.setLocationRelativeTo((Component) null);
+        this.setVisible(true);
+        this.setResizable(false);
 
     }
-    
 
-    private JButton getInfoCloseBtn(JLabel f1, JLabel f2, JLabel f3, JLabel f4, JLabel f5, JLabel f6, JLabel f7, JLabel f8) {
+    private JButton getInfoCloseBtn(JLabel f1, JLabel f2, JLabel f3, JLabel f4, JLabel f5, JLabel f6, JLabel f7,
+            JLabel f8) {
         JButton closeInfoBtn = new JButton("Close Info");
         closeInfoBtn.addActionListener(new ActionListener() {
             @Override
@@ -351,28 +385,27 @@ public class AlarMedUI extends JFrame implements ActionListener{
         return closeInfoBtn;
     }
 
-
     public void actionPerformed(ActionEvent e) {
-  
+
         if (e.getActionCommand().equals("new")) {
-           this.newPatientUI();
+            this.newPatientUI();
         }
-  
+
         if (e.getActionCommand().equals("add")) {
-           this.addPillUI();
+            this.addPillUI();
         }
-  
+
         if (e.getActionCommand().equals("view")) {
-           this.viewAllPillsUI();
+            this.viewAllPillsUI();
         }
 
         if (e.getActionCommand().equals("deletePill")) {
             this.deletePillUI();
-         }
+        }
 
-         if (e.getActionCommand().equals("moreInfo")) {
+        if (e.getActionCommand().equals("moreInfo")) {
             this.moreInfoUI();
-         }
-     }
+        }
+    }
 
 }
