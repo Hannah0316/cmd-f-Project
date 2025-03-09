@@ -23,13 +23,13 @@ public class Pill {
         timeList = times;
     }
 
-    public LocalDate getNextIntakeDate(Pill pill){
-        int freq = pill.getFreq();
+    public LocalDate getNextIntakeDate(){
+        int freq = getFreq();
         int dayStart = startDate.getDayOfYear();
         int today = LocalDate.now().getDayOfYear();
-        int calc = today-dayStart;
+        int calc = today - dayStart;
         int day;
-        if (calc % freq ==0) {
+        if (calc % freq == 0) {
             return LocalDate.now();
         } else {
             day = (calc % freq) + today;
@@ -57,6 +57,18 @@ public class Pill {
 
     public String getNote() {
         return noteString;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public ArrayList<LocalTime> getTimes() {
+        return timeList;
     }
 
 }
