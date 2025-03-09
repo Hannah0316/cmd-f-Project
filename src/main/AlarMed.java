@@ -46,11 +46,13 @@ public class AlarMed {
 
     public AlarMed() {
         initiate();
+        addNewPatient();
+        addNewPill();
         // Run user interface on a separate thread
         new Thread(this::runUserInterface).start();
 
         // Run machine on a separate thread
-        new Thread(this::runMachine).start();
+        runMachine();
     }
 
     public void runMachine() {
@@ -231,13 +233,13 @@ public class AlarMed {
     }
 
     public void displayMenu() {
-        System.out.println("Hello" + patient.getPatientName() + "! Please select an option:\n");
+        System.out.println("Hello " + patient.getPatientName() + "! Please select an option:\n");
         System.out.println("r: Register Patient");
         System.out.println("v: View all Pills");
         System.out.println("b: Add new pill");
         System.out.println("d: Delete pill");
         System.out.println("i: Inspect pill");
-        System.out.println("q: Quite the program");
+        System.out.println("q: Quit the program");
     }
 
     public void processMenuCommands(String input) {
